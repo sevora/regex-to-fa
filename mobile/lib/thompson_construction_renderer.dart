@@ -6,6 +6,7 @@ class ThompsonConstructionPainter extends CustomPainter {
   final String postfixExpression;
 
   ThompsonConstructionPainter(this.postfixExpression);
+  int stateVisualIndex = 0;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -15,19 +16,20 @@ class ThompsonConstructionPainter extends CustomPainter {
 
     const double radius = 30;
     const double lineLength = 60;
-    int stateVisualIndex = 0;
 
     final tree = thompsonConstruction(postfixExpression);
     final List<AutomatonState> renderedNodes = [];
     final List<Offset> renderedPositions = [];
 
+    stateVisualIndex = 0;
+
     if (tree != null) {
-      renderNode(canvas, paint, "s1", tree, null, 0, radius, lineLength, renderedNodes, renderedPositions, stateVisualIndex);
+      renderNode(canvas, paint, "s1", tree, null, 0, radius, lineLength, renderedNodes, renderedPositions);
     }
   }
 
   void renderNode(Canvas canvas, Paint paint, String? label, AutomatonState node, AutomatonState? previousNode, double offsetY, double radius, double lineLength,
-      List<AutomatonState> renderedNodes, List<Offset> renderedPositions, int stateVisualIndex) {
+      List<AutomatonState> renderedNodes, List<Offset> renderedPositions) {
 
     final int previousStateIndex = previousNode != null ? renderedNodes.indexOf(previousNode) : -1;
     final Offset previousPosition = previousStateIndex > -1 ? renderedPositions[previousStateIndex] : const Offset(0, 0);
@@ -41,7 +43,7 @@ class ThompsonConstructionPainter extends CustomPainter {
     }
 
     final double x = previousPosition.dx + lineLength;
-    final double y = previousPosition.dy;
+    final double y = previousPosition.dy + offsetY * radius * 2;
     drawArrow(canvas, paint, previousPosition + Offset(radius * 2, 0), Offset(x + lineLength, y));
 
     // Draw the label of the transition
@@ -77,8 +79,9 @@ class ThompsonConstructionPainter extends CustomPainter {
       renderedPositions.add(Offset(x + lineLength, y));
     }
 
-    for (var transition in node.transitions) {
-      renderNode(canvas, paint, transition.label, transition.state, node, offsetY + 1, radius, lineLength, renderedNodes, renderedPositions, stateVisualIndex);
+    for (var index = 0; index < node.transitions.length; ++index) {
+      var transition = node.transitions[index];
+      renderNode(canvas, paint, transition.label, transition.state, node, index.toDouble(), radius, lineLength, renderedNodes, renderedPositions);
     }
   }
 

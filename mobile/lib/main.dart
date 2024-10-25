@@ -28,16 +28,15 @@ class _MyAppState extends State<MyApp> {
       Scaffold(
         // Outer white container with padding
         body: SafeArea(
-          child: InteractiveViewer(
-            panEnabled: true, // Set it to false to prevent panning.
-            boundaryMargin: const EdgeInsets.all(double.infinity),
-            minScale: 0.5,
-            maxScale: 4,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
             child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
               child: Column(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    width: 5000,
+                    padding: const EdgeInsets.all(10),
                     child: TextFormField(
                       initialValue: _regularExpression,
                       decoration: const InputDecoration(
@@ -52,14 +51,14 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                   const SizedBox(
-                    width: 100,
+                    width: 5000,
                     height: 100,
                   ),
                   Container(
                     color: Colors.white,
                     child: Container(
-                      width: 1920,
-                      height: 1920,
+                      width: 5000,
+                      height: 5000,
                       color: Colors.white,
                       child: CustomPaint(
                           size: Size.infinite,
