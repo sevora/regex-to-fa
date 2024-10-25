@@ -1,11 +1,11 @@
-type BinaryOperator = "+" | "|" | "?";
-type UnaryOperator = "*";
-type GroupOperator = "(" | ")";
-type Operator = BinaryOperator | UnaryOperator | GroupOperator;
+export type BinaryOperator = "+" | "|" | "?";
+export type UnaryOperator = "*";
+export type GroupOperator = "(" | ")";
+export type Operator = BinaryOperator | UnaryOperator | GroupOperator;
 
 /**
  * This normalizes the regular expression by adding the merge operator (represented by ?)
- * properly. Example conversion: a(a+b)*b -> a?(a+b)*?b
+ * properly. Example: a(a+b)*b -> a?(a+b)*?b
  * @param expression - A non-normalized regular expression, i.e. a(a+b)*b
  */
 function normalizeExpression(expression: string) {
@@ -27,7 +27,9 @@ function normalizeExpression(expression: string) {
 }
 
 /**
- * Converts a normalized regular expression to an postfix expression
+ * This is an implementation of the Shunting-Yard algorithm.
+ * It Converts a normalized regular expression to an postfix expression. 
+ * Example: a?(a+b)*?b -> aab+*?b?
  * @param normalizedExpression - A normalized regular expression (use `normalizeExpression` to guarantee this) i.e.  a?(a+b)*?b
  */
 function infixToPostfix(normalizedExpression: string) {
@@ -68,8 +70,6 @@ function infixToPostfix(normalizedExpression: string) {
                 outputQueue.push(token);
                 break;
         }
-
-        console.log(operatorStack, outputQueue)
     }
 
     while (operatorStack.length > 0) {
@@ -104,7 +104,23 @@ function compareOperatorPrecedence(a: Operator, b: Operator) {
     return ranks[a] > ranks[b];
 }
 
-let x = normalizeExpression("a(a+b)*b");
-let y = infixToPostfix(x);
-console.log(x);
-console.log(y);
+/**
+ * This is an example usage of these functions.
+ * Running this would log the results of the working algorithms.
+ */
+export function exampleUsage() {
+    /**
+     * Original regular expression: a(a+b)*b
+     * Normalized regular expression: a?(a+b)*?b
+     * Postfix expression: aab+*?b?
+     */
+    const regularExpression = "a(a+b)*b";
+    const normalizedExpression = normalizeExpression(regularExpression);
+    const postfixExpression = infixToPostfix(normalizedExpression);
+    
+    console.table({
+        regularExpression, 
+        normalizedExpression, 
+        postfixExpression
+    });
+}

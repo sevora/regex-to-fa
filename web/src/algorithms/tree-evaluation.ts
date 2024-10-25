@@ -51,7 +51,7 @@ const reducer: { [operation in Operation]: (x: number, y: number) => number } = 
     }
 }
 
-export function example() {
+export function exampleUsage() {
     // This is the tree for 2*(5+3)
     const tree: Node = {
         value: "*",
