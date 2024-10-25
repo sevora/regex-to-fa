@@ -21,62 +21,58 @@ function ThompsonConstruction({ postfixExpression }: ThompsonConstructionProps) 
 
         if (tree) {
             context.clearRect(0, 0, canvas.width, canvas.height);
-            render([["s1", tree]], null);
+            renderNode("s1", tree, null, 0);
         }
 
-        function render(nodes: [string | null, AutomatonState][], previousState: AutomatonState | null) {
-            if (nodes.length === 0)
-                return;
-
+        function renderNode(label: string | null, node: AutomatonState, previousNode: AutomatonState | null, offsetY: number) {
             const lineLength = 90;
             const radius = 50;
             
-            for (let index = 0; index < nodes.length; ++index) {
-                const [transition, node] = nodes[index];
+            const previousStateIndex = previousNode ? renderedNodes.indexOf(previousNode) : -1;
+            const [previousX, previousY] = previousStateIndex > -1 ? renderedPositions[previousStateIndex] : [0, 150];
 
-                const previousStateIndex = previousState ? renderedNodes.indexOf(previousState) : -1;
-                const [previousX, previousY] = previousStateIndex > -1 ? renderedPositions[previousStateIndex] : [0, 150];
+            const existIndex = renderedNodes.indexOf(node);
+            context.fillStyle = '#000';
 
-                const existIndex = renderedNodes.indexOf(node);
-                context.fillStyle = '#000';
-
-                if (existIndex > -1) {
-                    const [targetX, targetY] = renderedPositions[existIndex];
-                    drawArrow(context, previousX + radius * 2, previousY, targetX, targetY);
-                    continue;
-                }
-                
-                let x = previousX + lineLength;
-                let y = previousY + index * radius * 2;
-                drawArrow(context, previousX + radius * 2, previousY, x + lineLength, y);
-                
-                // transition value
-                context.fillStyle = '#000';
-                context.font = "32px monospace";
-                context.fillText(transition || "ε", x + lineLength / 2 - 16, y - 10);
-
-                // state 
-                context.lineWidth = 3;
-                context.beginPath();
-                context.arc(x + lineLength + radius, y, radius, 0, 2 * Math.PI);
-                context.fillStyle = '#fff';
-                context.fill();
-                context.stroke();
-
-                context.fillStyle = '#000';
-                context.font = "32px monospace";
-                context.fillText(`q${stateVisualIndex}`, x + lineLength + radius/2, y);
-
-                stateVisualIndex++;
-
-                if (renderedNodes.indexOf(node) === -1) {
-                    renderedNodes.push(node);
-                    renderedPositions.push([x + lineLength, y]);
-                }
-
-                if (node.transitions) 
-                    render(node.transitions, node);
+            if (existIndex > -1) {
+                const [targetX, targetY] = renderedPositions[existIndex];
+                drawArrow(context, previousX + radius * 2, previousY, targetX, targetY);
+                return;
             }
+            
+            const x = previousX + lineLength;
+            const y = previousY + offsetY * radius * 2;
+            drawArrow(context, previousX + radius * 2, previousY, x + lineLength, y);
+            
+            // draw the label of the transition
+            context.fillStyle = '#000';
+            context.font = "32px monospace";
+            context.fillText(label || "ε", x + lineLength / 2 - 16, y - 10);
+
+            // draw the circular state
+            context.lineWidth = 3;
+            context.beginPath();
+            context.arc(x + lineLength + radius, y, radius, 0, 2 * Math.PI);
+            context.fillStyle = '#fff';
+            context.fill();
+            context.stroke();
+
+            // draw the text inside the circular state
+            context.fillStyle = '#000';
+            context.font = "32px monospace";
+            context.fillText(`q${stateVisualIndex}`, x + lineLength + radius/2, y);
+
+            stateVisualIndex++;
+
+            if (renderedNodes.indexOf(node) === -1) {
+                renderedNodes.push(node);
+                renderedPositions.push([x + lineLength, y]);
+            }
+
+            node.transitions.forEach((transition, index) => {
+                renderNode(transition.label, transition.state, node, offsetY + index);
+            });
+        
         }
 
     }

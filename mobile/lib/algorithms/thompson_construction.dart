@@ -8,21 +8,24 @@ class AutomatonState {
       : transitions = transitions ?? [];
 }
 
-/// An AutomatonTransition is a tuple containing
-/// a string and an AutomatonState.
-typedef AutomatonTransition = List<dynamic>;
+class AutomatonTransition {
+  String? label;
+  AutomatonState state;
+
+  AutomatonTransition({this.label, required this.state});
+}
 
 /// An implementation of Thompson's Construction algorithm. It accepts
 /// a postfix expression and generates an NFA with nulls.
 AutomatonState? thompsonConstruction(String postfixExpression) {
   final List<AutomatonState> stack = [];
 
-  for (int index = 0; index < postfixExpression.length; index++) {
-    final String token = postfixExpression[index];
+  for (int index = 0; index < postfixExpression.length; ++index) {
+    final token = postfixExpression[index];
 
     switch (token) {
-      case "+":
-      case "|":
+      case '+':
+      case '|':
         {
           /// This does a union operation by connecting
           /// both children's start state to a single start state
@@ -31,15 +34,18 @@ AutomatonState? thompsonConstruction(String postfixExpression) {
           final child1 = stack.isNotEmpty ? stack.removeLast() : null;
 
           if (child1 != null && child2 != null) {
-            final end = AutomatonState();
+            final end = AutomatonState(label: null);
 
-            child1.transitions[0][1].transitions.add([null, end]);
-            child2.transitions[0][1].transitions.add([null, end]);
+            child1.transitions[0].state.transitions.add(
+                AutomatonTransition(label: null, state: end));
+            child2.transitions[0].state.transitions.add(
+                AutomatonTransition(label: null, state: end));
 
             final start = AutomatonState(
+              label: null,
               transitions: [
-                [null, child1],
-                [null, child2]
+                AutomatonTransition(label: null, state: child1),
+                AutomatonTransition(label: null, state: child2),
               ],
             );
 
@@ -47,7 +53,7 @@ AutomatonState? thompsonConstruction(String postfixExpression) {
           }
         }
         break;
-      case "*":
+      case '*':
         {
           /// This makes a circularity by making
           /// the diagram's end state transition
@@ -56,25 +62,27 @@ AutomatonState? thompsonConstruction(String postfixExpression) {
 
           if (child != null) {
             final start = AutomatonState(
+              label: null,
               transitions: [
-                [null, child]
+                AutomatonTransition(label: null, state: child)
               ],
             );
 
-            final end = AutomatonState();
+            final end = AutomatonState(label: null);
+
             var foundEnd = child;
 
             while (foundEnd.transitions.isNotEmpty) {
-              foundEnd = foundEnd.transitions[0][1];
+              foundEnd = foundEnd.transitions[0].state;
             }
 
-            foundEnd.transitions.add([null, end]);
-            foundEnd.transitions.add([null, child]);
+            foundEnd.transitions.add(AutomatonTransition(label: null, state: end));
+            foundEnd.transitions.add(AutomatonTransition(label: null, state: child));
             stack.add(start);
           }
         }
         break;
-      case "?":
+      case '?':
         {
           final child2 = stack.isNotEmpty ? stack.removeLast() : null;
           final child1 = stack.isNotEmpty ? stack.removeLast() : null;
@@ -86,10 +94,10 @@ AutomatonState? thompsonConstruction(String postfixExpression) {
             var foundEnd = child1;
 
             while (foundEnd.transitions.isNotEmpty) {
-              foundEnd = foundEnd.transitions[0][1];
+              foundEnd = foundEnd.transitions[0].state;
             }
 
-            foundEnd.transitions.add([null, child2]);
+            foundEnd.transitions.add(AutomatonTransition(label: null, state: child2));
             stack.add(child1);
           }
         }
@@ -98,10 +106,14 @@ AutomatonState? thompsonConstruction(String postfixExpression) {
         {
           /// This creates a state like so:
           /// state --token--> state
-          final start = AutomatonState(transitions: []);
-          final end = AutomatonState();
+          final start = AutomatonState(
+            label: null,
+            transitions: [],
+          );
 
-          start.transitions.add([token, end]);
+          final end = AutomatonState(label: null, transitions: []);
+
+          start.transitions.add(AutomatonTransition(label: token, state: end));
           stack.add(start);
         }
         break;

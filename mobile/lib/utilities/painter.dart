@@ -3,8 +3,8 @@ import 'dart:ui';
 
 void drawArrow(Canvas canvas, Paint paint, Offset from, Offset to) {
   double angle = atan2(to.dy - from.dy, to.dx - from.dx);
-  double width = 4;
-  double headLength = 5;
+  double width = 1;
+  double headLength = 10;
 
   // Adjust the end position of the arrow head
   double adjustedToX = to.dx - (width * 1.15 * cos(angle));

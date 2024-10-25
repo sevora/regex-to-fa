@@ -15,41 +15,69 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  String _regularExpression = "a+b";
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Colors.white),
-      home: Scaffold(
+      theme: ThemeData.light().copyWith(scaffoldBackgroundColor: Colors.white),
+      home:
         // Outer white container with padding
-        body: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 80),
-          color: Colors.white,
-          // Inner yellow container
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextFormField(
-                    initialValue: "Hey",
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Enter a regular expression',
+      Scaffold(
+        // Outer white container with padding
+        body: SafeArea(
+          child: InteractiveViewer(
+            panEnabled: true, // Set it to false to prevent panning.
+            boundaryMargin: const EdgeInsets.all(double.infinity),
+            minScale: 0.5,
+            maxScale: 4,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    child: TextFormField(
+                      initialValue: _regularExpression,
+                      decoration: const InputDecoration(
+                        hintText: 'a+b',
+                        labelText: 'Regular Expression',
+                      ),
+                      onChanged: (text) {
+                        setState(() {
+                          _regularExpression = text;
+                        });
+                      },
                     ),
-                    style: const TextStyle(color: Colors.black)
-                ),
-                Container(
-                  color: Colors.white,
-                  child: CustomPaint(
-                      size: const Size(1920, 1080),
-                      painter: ThompsonConstructionPainter("a+b")
                   ),
-                ),
-              ]
+                  const SizedBox(
+                    width: 100,
+                    height: 100,
+                  ),
+                  Container(
+                    color: Colors.white,
+                    child: Container(
+                      width: 1920,
+                      height: 1920,
+                      color: Colors.white,
+                      child: CustomPaint(
+                          size: Size.infinite,
+                          painter: ThompsonConstructionPainter(
+                          infixToPostfix(
+                            normalizeExpression(_regularExpression)
+                          )
+                        )
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
+
     );
   }
 }

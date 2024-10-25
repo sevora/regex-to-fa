@@ -8,7 +8,10 @@ export interface AutomatonState {
     transitions: AutomatonTransition[]
 }
 
-type AutomatonTransition = [string | null, AutomatonState];
+export type AutomatonTransition = {
+    label: string | null,
+    state: AutomatonState
+};
 
 /**
  * An implementation of Thompson's Construction algorithm. It accepts
@@ -34,14 +37,14 @@ export function thompsonConstruction(postfixExpression: string) {
                 if (child1 && child2) {
                     const end: AutomatonState = { label: null, transitions: [] };
 
-                    child1.transitions[0][1].transitions[0] = [null, end];
-                    child2.transitions[0][1].transitions[0] = [null, end];
+                    child1.transitions[0].state.transitions.push({ label: null, state: end });
+                    child2.transitions[0].state.transitions.push({ label: null, state: end });
 
                     const start: AutomatonState = {
                         label: null,
                         transitions: [
-                            [null, child1],
-                            [null, child2]
+                            { label: null, state: child1 },
+                            { label: null, state: child2 }
                         ]
                     }
     
@@ -60,7 +63,7 @@ export function thompsonConstruction(postfixExpression: string) {
                     const start: AutomatonState = {
                         label: null,
                         transitions: [
-                            [null, child]
+                            { label: null, state: child }
                         ]
                     };
 
@@ -72,11 +75,11 @@ export function thompsonConstruction(postfixExpression: string) {
                     let foundEnd = child;
 
                     while (foundEnd.transitions.length > 0) {
-                        foundEnd = foundEnd.transitions[0][1];
+                        foundEnd = foundEnd.transitions[0].state;
                     }
 
-                    foundEnd.transitions.push([null, end]);
-                    foundEnd.transitions.push([null, child]);
+                    foundEnd.transitions.push({ label: null, state: end });
+                    foundEnd.transitions.push({ label: null, state: child });
                     stack.unshift(start);
                 }
             } break;
@@ -93,10 +96,10 @@ export function thompsonConstruction(postfixExpression: string) {
                     let foundEnd = child1;
 
                     while (foundEnd.transitions.length > 0) {
-                        foundEnd = foundEnd.transitions[0][1];
+                        foundEnd = foundEnd.transitions[0].state;
                     }
 
-                    foundEnd.transitions.push([null, child2]);
+                    foundEnd.transitions.push({ label: null, state: child2 });
                     stack.unshift(child1);
                 }
             } break;
@@ -115,7 +118,7 @@ export function thompsonConstruction(postfixExpression: string) {
                     transitions: []
                 }
 
-                start.transitions.push([token, end]);
+                start.transitions.push({ label: token, state: end });
                 stack.unshift(start);
             } break;
         }
