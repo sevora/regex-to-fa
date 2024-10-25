@@ -80,9 +80,10 @@ function infixToPostfix(normalizedExpression: string) {
 }
 
 /**
- * 
- * @param a 
- * @param b 
+ * This allows us to compare the precedence of operations needed for conversion 
+ * from infix to postfix
+ * @param a the first operator
+ * @param b the second operator
  * @returns true if the first operator has higher precedence than the second operator, false otherwise
  */
 function compareOperatorPrecedence(a: Operator, b: Operator) {    

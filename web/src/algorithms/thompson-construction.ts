@@ -8,6 +8,10 @@ interface State {
     transitions: [string | null, State][]
 }
 
+/**
+ * An implementation of Thompson's Construction algorithm. It accepts
+ * a postfix expression and generates an NFA with nulls.
+ */
 function thompsonConstruction(postfixExpression: string) {
     const stack: State[] = [];
 
@@ -115,10 +119,14 @@ function thompsonConstruction(postfixExpression: string) {
         }
     }
 
-    console.log(stack)
     return stack.shift();
 }
 
-const x = thompsonConstruction("aab+*?b?");
-console.log(x);
-// console.log(JSON.stringify(x, null, 2))
+/**
+ * This is an example usage of the Thompson Construction
+ * implementation that creates states that we may render.
+ */
+export function exampleUsage() {
+    const nfa = thompsonConstruction("aab+*?b?");
+    console.log(nfa);
+}
