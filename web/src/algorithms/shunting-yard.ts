@@ -19,7 +19,7 @@ export function normalizeExpression(expression: string) {
         
         if ( 
             !["+", "|", "(", ")"].includes(token) &&          // token can accept merge (?) operator such as transitions and unary operations
-            !["+", "|", ")", undefined].includes(nextToken)   // next token is not a binary operator or a group closing
+            !["+", "|", ")", "*", undefined].includes(nextToken)   // next token is not a binary operator or a group closing
         ) result.push("?");
     }
 

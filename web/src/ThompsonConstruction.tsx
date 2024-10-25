@@ -72,7 +72,6 @@ function ThompsonConstruction({ postfixExpression }: ThompsonConstructionProps) 
             node.transitions.forEach((transition, index) => {
                 renderNode(transition.label, transition.state, node, index);
             });
-        
         }
 
     }

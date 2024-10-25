@@ -23,7 +23,7 @@ String normalizeExpression(String expression) {
     result.add(token);
 
     if (![plus, pipe, leftParenthesis, rightParenthesis].contains(token) &&
-        ![plus, pipe, rightParenthesis, null].contains(nextToken)) {
+        ![plus, pipe, rightParenthesis, star, null].contains(nextToken)) {
       result.add(questionMark);
     }
   }
