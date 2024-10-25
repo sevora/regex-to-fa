@@ -3,17 +3,19 @@
  * This is a single state with transitions
  * leading to other states.
  */
-interface State {
+export interface AutomatonState {
     label: string | null;
-    transitions: [string | null, State][]
+    transitions: AutomatonTransition[]
 }
+
+type AutomatonTransition = [string | null, AutomatonState];
 
 /**
  * An implementation of Thompson's Construction algorithm. It accepts
  * a postfix expression and generates an NFA with nulls.
  */
-function thompsonConstruction(postfixExpression: string) {
-    const stack: State[] = [];
+export function thompsonConstruction(postfixExpression: string) {
+    const stack: AutomatonState[] = [];
 
     for (let index = 0; index < postfixExpression.length; ++index) {
         const token = postfixExpression[index];
@@ -30,12 +32,12 @@ function thompsonConstruction(postfixExpression: string) {
                 const child1 = stack.shift();
                 
                 if (child1 && child2) {
-                    const end: State = { label: null, transitions: [] };
+                    const end: AutomatonState = { label: null, transitions: [] };
 
                     child1.transitions[0][1].transitions[0] = [null, end];
                     child2.transitions[0][1].transitions[0] = [null, end];
 
-                    const start: State = {
+                    const start: AutomatonState = {
                         label: null,
                         transitions: [
                             [null, child1],
@@ -55,14 +57,14 @@ function thompsonConstruction(postfixExpression: string) {
                 const child = stack.shift();
 
                 if (child) {
-                    const start: State = {
+                    const start: AutomatonState = {
                         label: null,
                         transitions: [
                             [null, child]
                         ]
                     };
 
-                    const end: State = { 
+                    const end: AutomatonState = { 
                         label: null,
                         transitions: []
                     };
@@ -103,12 +105,12 @@ function thompsonConstruction(postfixExpression: string) {
                  * This creates a state like so:
                  * state --token--> state
                  */
-                const start: State = {
+                const start: AutomatonState = {
                     label: null,
                     transitions: [],
                 };
 
-                const end: State = {
+                const end: AutomatonState = {
                     label: null,
                     transitions: []
                 }

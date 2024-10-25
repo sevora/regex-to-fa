@@ -8,7 +8,7 @@ export type Operator = BinaryOperator | UnaryOperator | GroupOperator;
  * properly. Example: a(a+b)*b -> a?(a+b)*?b
  * @param expression - A non-normalized regular expression, i.e. a(a+b)*b
  */
-function normalizeExpression(expression: string) {
+export function normalizeExpression(expression: string) {
     let result = [];
 
     for (let index = 0; index < expression.length; ++index) {
@@ -32,7 +32,7 @@ function normalizeExpression(expression: string) {
  * Example: a?(a+b)*?b -> aab+*?b?
  * @param normalizedExpression - A normalized regular expression (use `normalizeExpression` to guarantee this) i.e.  a?(a+b)*?b
  */
-function infixToPostfix(normalizedExpression: string) {
+export function infixToPostfix(normalizedExpression: string) {
     let operatorStack: Operator[] = [];
     let outputQueue = [];
 
