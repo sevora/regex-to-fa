@@ -124,7 +124,92 @@ export function thompsonConstruction(postfixExpression: string) {
         }
     }
 
-    return stack.shift();
+    const tree = stack.shift();
+    if (tree) 
+        setLabelNames(tree);
+
+    return tree;
+}
+
+/**
+ * This sets the label names accordingly by traversing
+ * the tree by utilizing a stack.
+ * @param node the root node
+ */
+function setLabelNames(node: AutomatonState) {
+    let stateIndex = 0;
+    let visited: AutomatonState[] = [];
+    let nodes: AutomatonState[] = [node];
+
+    while (nodes.length > 0) {
+        const node = nodes.shift()!;
+        node.label = "q" + stateIndex++;
+
+        node.transitions.forEach(transition => {
+            if (!visited.includes(transition.state))
+                nodes.push(transition.state);
+        })
+
+        visited.push(node);
+    }
+}
+
+/**
+ * This gets the transition table of a tree by traversing
+ * it twice. Once to retrieve all the headers, and for the second time
+ * to get the associated values for each column in every row.
+ * @param node the root node
+ */
+export function getTransitionTable(node: AutomatonState) {
+    let headers: string[] = [];
+    let table: string[][] = [];
+
+    let visited: AutomatonState[] = [];
+    let nodes: AutomatonState[] = [node];
+
+    // retrieve headers or transitions
+    while (nodes.length > 0) {
+        const node = nodes.shift()!;
+        node.transitions.forEach(transition => {
+            if (!headers.includes(transition.label || "ε"))
+                headers.push(transition.label || "ε");
+
+            if (!visited.includes(transition.state))
+                nodes.push(transition.state);
+        })
+        visited.push(node);
+    }
+
+    // we sort the headers for consistency
+    headers.sort();
+
+    visited = [];
+    nodes = [node];
+
+    // retrieve the values for each row
+    while (nodes.length > 0) {
+        const node = nodes.shift()!;
+        const values: string[] = new Array(headers.length).fill("ε");
+
+        node.transitions.forEach(transition => {  
+            const index = headers.indexOf(transition.label || "ε");
+            const value = transition.state.label;
+            values[index] = value || "ε";
+
+            if (!visited.includes(transition.state))
+                nodes.push(transition.state);
+        })
+
+        // we include the name of the node with these transitions
+        values.unshift(node.label || "ε");
+        table.push(values);
+        visited.push(node);
+    }
+
+    // finally, add the headers into the table
+    headers.unshift("state");
+    table.unshift(headers);
+    return table;
 }
 
 /**

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { AutomatonState, thompsonConstruction } from './algorithms/thompson-construction';
+import { AutomatonState, getTransitionTable, thompsonConstruction } from './algorithms/thompson-construction';
 import { drawArrow } from './utilities/canvas';
 
 interface ThompsonConstructionProps {
@@ -7,8 +7,9 @@ interface ThompsonConstructionProps {
 }
 
 /**
- * This is a Thompson Construction Visualizer
- * 
+ * This is a Thompson Construction Visualizer.
+ * It includes the transition diagram and transition table
+ * upon applying Thompson's construction.
  */
 function ThompsonConstruction({ postfixExpression }: ThompsonConstructionProps) {
     const canvasReference = useRef<HTMLCanvasElement | null>(null);
@@ -17,13 +18,22 @@ function ThompsonConstruction({ postfixExpression }: ThompsonConstructionProps) 
         
         let renderedNodes: AutomatonState[] = [];
         let renderedPositions: [number, number][] = [];
-        let stateVisualIndex = 0;
 
         if (tree) {
             context.clearRect(0, 0, canvas.width, canvas.height);
-            renderNode("s1", tree, null, 0);
+            renderNode("ε", tree, null, 0);
+            renderTable(tree, 0, 500);
         }
-
+        
+        /**
+         * This is used to render the nodes individually and draw arrows connecting
+         * them that is why this demands the previous node.
+         * @param label the label of the transition
+         * @param node the root or current node
+         * @param previousNode the previous node
+         * @param offsetY the offsetY used for layouting
+         * @returns 
+         */
         function renderNode(label: string | null, node: AutomatonState, previousNode: AutomatonState | null, offsetY: number) {
             const lineLength = 90;
             const radius = 50;
@@ -41,14 +51,20 @@ function ThompsonConstruction({ postfixExpression }: ThompsonConstructionProps) 
             }
             
             const x = previousX + lineLength;
-            const y = previousY + offsetY * radius * 2;
+            const y = previousY + offsetY * 1.1 * radius * 2;
             drawArrow(context, previousX + radius * 2, previousY, x + lineLength, y);
             
+            // ensure text is properly drawn
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+
             // draw the label of the transition
             context.fillStyle = '#000';
             context.font = "32px monospace";
-            context.fillText(label || "ε", x + lineLength / 2 - 16, y - 10);
-
+            context.textAlign = 'center';
+            context.fillText(label || "ε", x + lineLength / 2, y - 15);
+            
+            
             // draw the circular state
             context.lineWidth = 3;
             context.beginPath();
@@ -60,9 +76,7 @@ function ThompsonConstruction({ postfixExpression }: ThompsonConstructionProps) 
             // draw the text inside the circular state
             context.fillStyle = '#000';
             context.font = "32px monospace";
-            context.fillText(`q${stateVisualIndex}`, x + lineLength + radius/2, y);
-
-            stateVisualIndex++;
+            context.fillText(node.label || "ε", x + lineLength + radius, y);
 
             if (renderedNodes.indexOf(node) === -1) {
                 renderedNodes.push(node);
@@ -74,6 +88,38 @@ function ThompsonConstruction({ postfixExpression }: ThompsonConstructionProps) 
             });
         }
 
+        /**
+         * 
+         * @param node 
+         * @param startX 
+         * @param startY 
+         */
+        function renderTable(node: AutomatonState, startX: number, startY: number) {
+            const table = getTransitionTable(node);
+            const cellWidth = 120;
+            const cellHeight = 50;
+
+            for (let y = 0; y < table.length; ++y) {
+                const row = table[y];
+                for (let x = 0; x < row.length; ++x) {
+                    const value = table[y][x];
+                    context.strokeStyle = "#000";
+
+                    context.strokeRect(
+                        startX + x * cellWidth, 
+                        startY + y * cellHeight, 
+                        cellWidth, 
+                        cellHeight
+                    );
+
+                    context.fillStyle = '#000';
+                    context.font = "32px monospace";
+                    context.textAlign = 'center';
+                    context.textBaseline = 'middle';
+                    context.fillText(value, startX + x * cellWidth + cellWidth/2,  startY + y * cellHeight + cellHeight / 2);
+                }
+            }
+        }
     }
 
     useEffect(function () {

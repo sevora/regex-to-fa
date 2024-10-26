@@ -120,7 +120,89 @@ AutomatonState? thompsonConstruction(String postfixExpression) {
     }
   }
 
-  return stack.isNotEmpty ? stack.removeLast() : null;
+  var automata = stack.isNotEmpty ? stack.removeLast() : null;
+  if (automata != null) {
+    setLabelNames(automata);
+  }
+  
+  return automata;
+}
+
+void setLabelNames(AutomatonState node) {
+  // calculate the state names by traversing the tree
+  int stateIndex = 0;
+  List<AutomatonState> visited = [];
+  List<AutomatonState> nodes = [node]; // Assuming 'tree' is defined
+
+  while (nodes.isNotEmpty) {
+    var node = nodes.removeAt(0);
+    node.label = "q$stateIndex";
+    stateIndex++;
+
+    for (var transition in node.transitions) {
+      if (!visited.contains(transition.state)) {
+        nodes.add(transition.state);
+      }
+    }
+
+    visited.add(node);
+  }
+}
+
+List<List<String>> getTransitionTable(AutomatonState node) {
+  List<String> headers = [];
+  List<List<String>> table = [];
+
+  List<AutomatonState> visited = [];
+  List<AutomatonState> nodes = [node];
+
+  // retrieve headers or transitions
+  while (nodes.isNotEmpty) {
+    var currentNode = nodes.removeAt(0);
+    for (var transition in currentNode.transitions) {
+      String label = transition.label ?? "ε";
+      if (!headers.contains(label)) {
+        headers.add(label);
+      }
+
+      if (!visited.contains(transition.state)) {
+        nodes.add(transition.state);
+      }
+    }
+    visited.add(currentNode);
+  }
+
+  // we sort the headers for consistency
+  headers.sort();
+
+  visited = [];
+  nodes = [node];
+
+  // retrieve the values for each row
+  while (nodes.isNotEmpty) {
+    var currentNode = nodes.removeAt(0);
+    List<String> values = List.filled(headers.length, "ε", growable: true);
+
+    for (var index = 0; index < currentNode.transitions.length; ++index) {
+      var transition = currentNode.transitions[index];
+      String value = transition.state.label ?? "ε";
+      values[index] = value;
+
+      if (!visited.contains(transition.state)) {
+        nodes.add(transition.state);
+      }
+    }
+
+    // we include the name of the node with these transitions
+    values.insert(0, currentNode.label ?? "ε");
+    table.add(values);
+    visited.add(currentNode);
+  }
+
+  // finally, add the headers into the table
+  headers.insert(0, "state");
+  table.insert(0, headers);
+  return table;
 }
 
 /// This is an example usage of the Thompson Construction

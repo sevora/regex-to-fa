@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:regex_to_fa_mobile/thompson_construction_renderer.dart';
+import 'package:regex_to_fa_mobile/thompson_construction_painter.dart';
 import './algorithms/shunting_yard.dart';
 
 void main() {
