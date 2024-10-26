@@ -143,7 +143,12 @@ function setLabelNames(node: AutomatonState) {
 
     while (nodes.length > 0) {
         const node = nodes.shift()!;
-        node.label = "q" + stateIndex++;
+             
+        if (visited.includes(node))
+            continue;
+        
+        if (node.label === null)
+            node.label = "q" + stateIndex++;
 
         node.transitions.forEach(transition => {
             if (!visited.includes(transition.state))
@@ -170,6 +175,10 @@ export function getTransitionTable(node: AutomatonState) {
     // retrieve headers or transitions
     while (nodes.length > 0) {
         const node = nodes.shift()!;
+             
+        if (visited.includes(node))
+            continue;
+
         node.transitions.forEach(transition => {
             if (!headers.includes(transition.label || "ε"))
                 headers.push(transition.label || "ε");
@@ -189,6 +198,10 @@ export function getTransitionTable(node: AutomatonState) {
     // retrieve the values for each row
     while (nodes.length > 0) {
         const node = nodes.shift()!;
+        
+        if (visited.includes(node))
+            continue;
+
         const values: string[] = new Array(headers.length).fill("ε");
 
         node.transitions.forEach(transition => {  

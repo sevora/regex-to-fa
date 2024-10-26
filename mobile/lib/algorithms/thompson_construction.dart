@@ -138,8 +138,12 @@ void setLabelNames(AutomatonState node) {
 
   while (nodes.isNotEmpty) {
     var node = nodes.removeAt(0);
-    node.label = "q$stateIndex";
-    stateIndex++;
+
+    if (visited.contains(node)) {
+      continue;
+    }
+
+    node.label ??= "q${stateIndex++}";
 
     for (var transition in node.transitions) {
       if (!visited.contains(transition.state)) {
@@ -165,6 +169,11 @@ List<List<String>> getTransitionTable(AutomatonState node) {
   // retrieve headers or transitions
   while (nodes.isNotEmpty) {
     var currentNode = nodes.removeAt(0);
+
+    if (visited.contains(currentNode)) {
+      continue;
+    }
+
     for (var transition in currentNode.transitions) {
       String label = transition.label ?? "ε";
       if (!headers.contains(label)) {
@@ -175,6 +184,7 @@ List<List<String>> getTransitionTable(AutomatonState node) {
         nodes.add(transition.state);
       }
     }
+
     visited.add(currentNode);
   }
 
@@ -187,6 +197,11 @@ List<List<String>> getTransitionTable(AutomatonState node) {
   // retrieve the values for each row
   while (nodes.isNotEmpty) {
     var currentNode = nodes.removeAt(0);
+
+    if (visited.contains(currentNode)) {
+      continue;
+    }
+
     List<String> values = List.filled(headers.length, "ε", growable: true);
 
     for (var index = 0; index < currentNode.transitions.length; ++index) {
