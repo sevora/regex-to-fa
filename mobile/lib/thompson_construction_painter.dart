@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:regex_to_fa_mobile/utilities/painter.dart';
 import 'algorithms/thompson_construction.dart';
@@ -52,7 +54,17 @@ class ThompsonConstructionPainter extends CustomPainter {
 
     if (existIndex > -1) {
       final Offset targetPosition = renderedPositions[existIndex];
-      drawArrow(canvas, paint, previousPosition + Offset(radius * 2, 0), targetPosition);
+
+      if (targetPosition.dx < previousPosition.dx) {
+        final Offset topOrigin = previousPosition + Offset(radius, -radius);
+        final Offset topTarget = targetPosition + Offset(radius, -radius);
+        final Offset midPoint = (topOrigin + topTarget) / 2;
+        final Offset topMidPoint = midPoint - Offset(0, sqrt(midPoint.dx));
+        drawArrowCurved(canvas, paint, topOrigin, topTarget, topMidPoint);
+      } else {
+        drawArrow(canvas, paint, previousPosition + Offset(radius * 2, 0), targetPosition);
+      }
+
       return;
     }
 
