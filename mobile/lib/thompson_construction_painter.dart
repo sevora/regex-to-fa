@@ -45,6 +45,16 @@ class ThompsonConstructionPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     if (existIndex > -1) {
+      // Draw the label of the transition
+      final TextPainter labelPainter = TextPainter(
+        text: TextSpan(
+          text: label ?? 'ε',
+          style: const TextStyle(fontSize: 16, color: Colors.black, fontFamily: 'monospace'),
+        ),
+        textAlign: TextAlign.center,
+        textDirection: TextDirection.ltr,
+      )..layout();
+
       final Offset targetPosition = renderedPositions[existIndex];
 
       // the assumption is that when the direction is backwards,
@@ -58,10 +68,13 @@ class ThompsonConstructionPainter extends CustomPainter {
             midPoint.dy - (topOrigin.dx - topTarget.dx).abs() * 0.05
         );
         drawArrowCurved(canvas, arrowPaint, topOrigin, topTarget, topMidPoint);
+        // we don't want to forget rendering the transition label
+        labelPainter.paint(canvas, Offset(topMidPoint.dx, topMidPoint.dy - 10));
       } else {
         drawArrow(canvas, arrowPaint, previousPosition + Offset(radius * 2, 0), targetPosition);
+        // we don't want to forget rendering the transition label
+        labelPainter.paint(canvas, (previousPosition + targetPosition) / 2);
       }
-
       return;
     }
 

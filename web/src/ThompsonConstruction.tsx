@@ -17,7 +17,6 @@ function ThompsonConstruction({ postfixExpression }: ThompsonConstructionProps) 
         const tree = thompsonConstruction(postfixExpression);
         
         let renderedNodes: AutomatonState[] = [];
-        let renderedBackwardNodes: AutomatonState[] = [];
         let renderedPositions: [number, number][] = [];
 
         if (tree) {
@@ -36,18 +35,14 @@ function ThompsonConstruction({ postfixExpression }: ThompsonConstructionProps) 
          * @returns 
          */
         function renderNode(label: string | null, node: AutomatonState, previousNode: AutomatonState | null, offsetY: number) {
-            const lineLength = 90;
-            const radius = 50;
+            const lineLength = 100;
+            const radius = 60;
             
             const previousStateIndex = previousNode ? renderedNodes.indexOf(previousNode) : -1;
             const [previousX, previousY] = previousStateIndex > -1 ? renderedPositions[previousStateIndex] : [0, 150];
 
             const existIndex = renderedNodes.indexOf(node);
             context.fillStyle = '#000';
-
-            if (renderedBackwardNodes.includes(node)) {
-                return;
-            }
 
             if (existIndex > -1) {
                 const [targetX, targetY] = renderedPositions[existIndex];
@@ -60,11 +55,23 @@ function ThompsonConstruction({ postfixExpression }: ThompsonConstructionProps) 
                     const midPointY = (topOriginY + topTargetY) / 2;
                     const topMidPointY = Math.sqrt(midPointY) - Math.abs(topOriginX - topTargetX) * 0.05;                    
                     drawArrowCurved(context, topOriginX, topOriginY, topTargetX, topTargetY, midPointX, topMidPointY);
+                    
+                    // we don't want to forget rendering the transition label
+                    context.fillStyle = '#000';
+                    context.fillStyle = '#000';
+                    context.font = "32px monospace";
+                    context.textAlign = 'center';
+                    context.fillText(label || "ε", midPointX + lineLength / 2, topMidPointY - 15);
+    
                 } else {
                     drawArrow(context, previousX + radius * 2, previousY, targetX, targetY);
+                    
+                    // we don't want to forget rendering the transition label
+                    context.fillStyle = '#000';
+                    context.font = "32px monospace";
+                    context.textAlign = 'center';
+                    context.fillText(label || "ε", (previousX + targetX) / 2, (previousY + targetY) / 2 - 6);
                 }
-
-                renderedBackwardNodes.push(node);
                 return;
             }
             
@@ -81,8 +88,8 @@ function ThompsonConstruction({ postfixExpression }: ThompsonConstructionProps) 
             context.font = "32px monospace";
             context.textAlign = 'center';
             context.fillText(label || "ε", x + lineLength / 2, y - 15);
-            
-            
+
+        
             // draw the circular state
             context.lineWidth = 3;
             context.beginPath();
@@ -112,9 +119,6 @@ function ThompsonConstruction({ postfixExpression }: ThompsonConstructionProps) 
             }
 
             node.transitions.forEach((transition, index) => {
-                if (renderedBackwardNodes.includes(transition.state)) {
-                    return;
-                }
                 renderNode(transition.label, transition.state, node, index);
             });
         }
