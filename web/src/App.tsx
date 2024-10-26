@@ -4,7 +4,7 @@ import { infixToPostfix, normalizeExpression } from './algorithms/shunting-yard'
 import ThompsonConstruction from './ThompsonConstruction';
 
 function App() {
-  const [regex, setRegex] = useState<string>("");
+  const [regex, setRegex] = useState<string>("(a|b)*");
 
   return (
     <div className="p-2">

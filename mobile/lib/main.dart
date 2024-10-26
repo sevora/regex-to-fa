@@ -3,7 +3,6 @@ import 'package:regex_to_fa_mobile/thompson_construction_painter.dart';
 import './algorithms/shunting_yard.dart';
 
 void main() {
-  exampleUsage();
   runApp(const MyApp());
 }
 
@@ -15,7 +14,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _regularExpression = "a+b";
+  String _regularExpression = "(a|b)*";
 
   // This widget is the root of your application.
   @override
@@ -54,7 +53,7 @@ class _MyAppState extends State<MyApp> {
                     child: TextFormField(
                       initialValue: _regularExpression,
                       decoration: const InputDecoration(
-                        hintText: 'a+b',
+                        hintText: 'Enter regex...',
                         labelText: 'Regular Expression',
                       ),
                       onChanged: (text) {

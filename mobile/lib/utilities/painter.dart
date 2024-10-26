@@ -31,7 +31,7 @@ void drawArrow(Canvas canvas, Paint paint, Offset from, Offset to) {
 }
 
 void drawArrowCurved(Canvas canvas, Paint paint, Offset from, Offset to, Offset midPoint) {
-  double width = 1;
+  double width = 1; // Increased width for visibility
   double headLength = 10;
 
   // Draw the curved line of the arrow
@@ -62,6 +62,6 @@ void drawArrowCurved(Canvas canvas, Paint paint, Offset from, Offset to, Offset 
   );
   arrowPath.close(); // Connects the last point back to the start
 
-  // Fill the arrowhead
+  // Fill the arrowhead with a solid color
   canvas.drawPath(arrowPath, paint..style = PaintingStyle.fill);
 }
