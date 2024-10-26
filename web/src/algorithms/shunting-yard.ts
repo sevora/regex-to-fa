@@ -18,7 +18,7 @@ export function normalizeExpression(expression: string) {
         result.push(token);
         
         if ( 
-            !["+", "|", "(", ")"].includes(token) &&          // token can accept merge (?) operator such as transitions and unary operations
+            !["+", "|", "("].includes(token) &&          // token can accept merge (?) operator such as transitions and unary operations
             !["+", "|", ")", "*", undefined].includes(nextToken)   // next token is not a binary operator or a group closing
         ) result.push("?");
     }
@@ -118,7 +118,7 @@ export function exampleUsage() {
     const regularExpression = "a(a+b)*b";
     const normalizedExpression = normalizeExpression(regularExpression);
     const postfixExpression = infixToPostfix(normalizedExpression);
-    
+
     console.table({
         regularExpression, 
         normalizedExpression, 
