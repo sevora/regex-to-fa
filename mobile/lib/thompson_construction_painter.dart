@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:regex_to_fa_mobile/utilities/painter.dart';
 import 'algorithms/thompson_construction.dart';
@@ -22,18 +20,8 @@ class ThompsonConstructionPainter extends CustomPainter {
     final List<Offset> renderedPositions = [];
 
     if (tree != null) {
-      // we need to initialize two separate Paint instances
-      // as there is weird behaviour when we don't.
-      final Paint diagramPaint = Paint()
-        ..color = Colors.black
-        ..style = PaintingStyle.stroke;
-
-      final Paint tablePaint = Paint()
-        ..color = Colors.black
-        ..style = PaintingStyle.stroke;
-
-      renderNode(canvas, diagramPaint, "ε", tree, null, 0, radius, lineLength, renderedNodes, renderedPositions);
-      renderTable(canvas, tablePaint, tree, 20, 150);
+      renderNode(canvas, "ε", tree, null, 0, radius, lineLength, renderedNodes, renderedPositions);
+      renderTable(canvas, tree, 20, 150);
     }
   }
 
@@ -44,7 +32,7 @@ class ThompsonConstructionPainter extends CustomPainter {
   /// @param previousNode the previous node
   /// @param offsetY the offsetY used for layouting
   /// @returns
-  void renderNode(Canvas canvas, Paint paint, String? label, AutomatonState node, AutomatonState? previousNode, double offsetY, double radius, double lineLength,
+  void renderNode(Canvas canvas, String? label, AutomatonState node, AutomatonState? previousNode, double offsetY, double radius, double lineLength,
       List<AutomatonState> renderedNodes, List<Offset> renderedPositions) {
 
     final int previousStateIndex = previousNode != null ? renderedNodes.indexOf(previousNode) : -1;
@@ -52,17 +40,26 @@ class ThompsonConstructionPainter extends CustomPainter {
 
     final int existIndex = renderedNodes.indexOf(node);
 
+    final Paint arrowPaint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke;
+
     if (existIndex > -1) {
       final Offset targetPosition = renderedPositions[existIndex];
 
+      // the assumption is that when the direction is backwards,
+      // the arrow should be curved
       if (targetPosition.dx < previousPosition.dx) {
         final Offset topOrigin = previousPosition + Offset(radius, -radius);
         final Offset topTarget = targetPosition + Offset(radius, -radius);
         final Offset midPoint = (topOrigin + topTarget) / 2;
-        final Offset topMidPoint = midPoint - Offset(0, sqrt(midPoint.dx));
-        drawArrowCurved(canvas, paint, topOrigin, topTarget, topMidPoint);
+        final Offset topMidPoint = Offset(
+            midPoint.dx,
+            midPoint.dy - (topOrigin.dx - topTarget.dx).abs() * 0.05
+        );
+        drawArrowCurved(canvas, arrowPaint, topOrigin, topTarget, topMidPoint);
       } else {
-        drawArrow(canvas, paint, previousPosition + Offset(radius * 2, 0), targetPosition);
+        drawArrow(canvas, arrowPaint, previousPosition + Offset(radius * 2, 0), targetPosition);
       }
 
       return;
@@ -70,13 +67,13 @@ class ThompsonConstructionPainter extends CustomPainter {
 
     final double x = previousPosition.dx + lineLength;
     final double y = previousPosition.dy + offsetY * 1.1 * radius * 2;
-    drawArrow(canvas, paint, previousPosition + Offset(radius * 2, 0), Offset(x + lineLength, y));
+    drawArrow(canvas, arrowPaint, previousPosition + Offset(radius * 2, 0), Offset(x + lineLength, y));
 
     // Draw the label of the transition
     final TextPainter labelPainter = TextPainter(
       text: TextSpan(
         text: label ?? 'ε',
-        style: const TextStyle(fontSize: 16, color: Colors.black, fontFamily: 'monospace'),
+        style: const TextStyle(fontSize: 16, color: Colors.black, fontFamily: 'monospace', fontWeight: FontWeight.bold),
       ),
       textAlign: TextAlign.center,
       textDirection: TextDirection.ltr,
@@ -84,19 +81,24 @@ class ThompsonConstructionPainter extends CustomPainter {
 
     labelPainter.paint(canvas, Offset(x + lineLength/2 - labelPainter.width, y - 20));
 
+    final Paint circlePaint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke;
+    circlePaint.strokeWidth = 2;
+
     // Draw the circular state
-    canvas.drawCircle(Offset(x + lineLength + radius, y), radius, paint..style = PaintingStyle.stroke..color = Colors.black);
+    canvas.drawCircle(Offset(x + lineLength + radius, y), radius, circlePaint..style = PaintingStyle.stroke..color = Colors.black);
 
     if (node.transitions.isEmpty) {
       // Draw the circular state
-      canvas.drawCircle(Offset(x + lineLength + radius, y), radius * 0.8, paint..style = PaintingStyle.stroke..color = Colors.black);
+      canvas.drawCircle(Offset(x + lineLength + radius, y), radius * 0.8, circlePaint..style = PaintingStyle.stroke..color = Colors.black);
     }
 
     // Draw the text inside the circular state
     final TextPainter statePainter = TextPainter(
       text: TextSpan(
         text: node.label,
-        style: const TextStyle(fontSize: 16, color: Colors.black, fontFamily: 'monospace'),
+        style: const TextStyle(fontSize: 16, color: Colors.black, fontFamily: 'monospace', fontWeight: FontWeight.bold),
       ),
       textAlign: TextAlign.left,
       textDirection: TextDirection.ltr,
@@ -111,7 +113,7 @@ class ThompsonConstructionPainter extends CustomPainter {
 
     for (var index = 0; index < node.transitions.length; ++index) {
       var transition = node.transitions[index];
-      renderNode(canvas, paint, transition.label, transition.state, node, index.toDouble(), radius, lineLength, renderedNodes, renderedPositions);
+      renderNode(canvas, transition.label, transition.state, node, index.toDouble(), radius, lineLength, renderedNodes, renderedPositions);
     }
   }
 
@@ -119,11 +121,16 @@ class ThompsonConstructionPainter extends CustomPainter {
   /// @param node the root node
   /// @param startX the starting x-coordinate
   /// @param startY the starting y-coordinate
-  void renderTable(Canvas canvas, Paint paint, AutomatonState node, double startX, double startY) {
+  void renderTable(Canvas canvas, AutomatonState node, double startX, double startY) {
     // Assume getTransitionTable is defined and returns a List<List<String>>
     var table = getTransitionTable(node);
     double cellWidth = 100.0;
     double cellHeight = 30.0;
+
+    final Paint paint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke;
+    paint.strokeWidth = 2;
 
     for (int y = 0; y < table.length; ++y) {
       List<String> row = table[y];
@@ -149,6 +156,7 @@ class ThompsonConstructionPainter extends CustomPainter {
               color: Colors.black,
               fontSize: 16.0,
               fontFamily: 'monospace',
+              fontWeight: FontWeight.bold
             ),
           ),
           textAlign: TextAlign.center,

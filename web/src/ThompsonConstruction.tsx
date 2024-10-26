@@ -17,6 +17,7 @@ function ThompsonConstruction({ postfixExpression }: ThompsonConstructionProps) 
         const tree = thompsonConstruction(postfixExpression);
         
         let renderedNodes: AutomatonState[] = [];
+        let renderedBackwardNodes: AutomatonState[] = [];
         let renderedPositions: [number, number][] = [];
 
         if (tree) {
@@ -44,6 +45,10 @@ function ThompsonConstruction({ postfixExpression }: ThompsonConstructionProps) 
             const existIndex = renderedNodes.indexOf(node);
             context.fillStyle = '#000';
 
+            if (renderedBackwardNodes.includes(node)) {
+                return;
+            }
+
             if (existIndex > -1) {
                 const [targetX, targetY] = renderedPositions[existIndex];
                 if (targetX < previousX) {
@@ -53,11 +58,13 @@ function ThompsonConstruction({ postfixExpression }: ThompsonConstructionProps) 
                     const topTargetY = targetY - radius;
                     const midPointX = (topOriginX + topTargetX) / 2;
                     const midPointY = (topOriginY + topTargetY) / 2;
-                    const topMidPointY = midPointY - Math.sqrt(midPointX);                    
+                    const topMidPointY = Math.sqrt(midPointY) - Math.abs(topOriginX - topTargetX) * 0.05;                    
                     drawArrowCurved(context, topOriginX, topOriginY, topTargetX, topTargetY, midPointX, topMidPointY);
                 } else {
                     drawArrow(context, previousX + radius * 2, previousY, targetX, targetY);
                 }
+
+                renderedBackwardNodes.push(node);
                 return;
             }
             
@@ -105,6 +112,9 @@ function ThompsonConstruction({ postfixExpression }: ThompsonConstructionProps) 
             }
 
             node.transitions.forEach((transition, index) => {
+                if (renderedBackwardNodes.includes(transition.state)) {
+                    return;
+                }
                 renderNode(transition.label, transition.state, node, index);
             });
         }
