@@ -3,7 +3,7 @@ import 'dart:ui';
 
 void drawArrow(Canvas canvas, Paint paint, Offset from, Offset to) {
   double angle = atan2(to.dy - from.dy, to.dx - from.dx);
-  double width = 2;
+  double width = 1;
   double headLength = 10;
 
   // Adjust the end position of the arrow head
@@ -31,7 +31,7 @@ void drawArrow(Canvas canvas, Paint paint, Offset from, Offset to) {
 }
 
 void drawArrowCurved(Canvas canvas, Paint paint, Offset from, Offset to, Offset midPoint) {
-  double width = 2; // Increased width for visibility
+  double width = 1; // Increased width for visibility
   double headLength = 10;
 
   // Draw the curved line of the arrow

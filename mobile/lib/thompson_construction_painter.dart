@@ -73,7 +73,7 @@ class ThompsonConstructionPainter extends CustomPainter {
     final TextPainter labelPainter = TextPainter(
       text: TextSpan(
         text: label ?? 'ε',
-        style: const TextStyle(fontSize: 16, color: Colors.black, fontFamily: 'monospace', fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 16, color: Colors.black, fontFamily: 'monospace'),
       ),
       textAlign: TextAlign.center,
       textDirection: TextDirection.ltr,
@@ -84,7 +84,7 @@ class ThompsonConstructionPainter extends CustomPainter {
     final Paint circlePaint = Paint()
       ..color = Colors.black
       ..style = PaintingStyle.stroke;
-    circlePaint.strokeWidth = 2;
+    circlePaint.strokeWidth = 1;
 
     // Draw the circular state
     canvas.drawCircle(Offset(x + lineLength + radius, y), radius, circlePaint..style = PaintingStyle.stroke..color = Colors.black);
@@ -98,7 +98,7 @@ class ThompsonConstructionPainter extends CustomPainter {
     final TextPainter statePainter = TextPainter(
       text: TextSpan(
         text: node.label,
-        style: const TextStyle(fontSize: 16, color: Colors.black, fontFamily: 'monospace', fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 16, color: Colors.black, fontFamily: 'monospace'),
       ),
       textAlign: TextAlign.left,
       textDirection: TextDirection.ltr,
@@ -130,7 +130,7 @@ class ThompsonConstructionPainter extends CustomPainter {
     final Paint paint = Paint()
       ..color = Colors.black
       ..style = PaintingStyle.stroke;
-    paint.strokeWidth = 2;
+    paint.strokeWidth = 1;
 
     for (int y = 0; y < table.length; ++y) {
       List<String> row = table[y];
@@ -155,8 +155,7 @@ class ThompsonConstructionPainter extends CustomPainter {
             style: const TextStyle(
               color: Colors.black,
               fontSize: 16.0,
-              fontFamily: 'monospace',
-              fontWeight: FontWeight.bold
+              fontFamily: 'monospace'
             ),
           ),
           textAlign: TextAlign.center,
