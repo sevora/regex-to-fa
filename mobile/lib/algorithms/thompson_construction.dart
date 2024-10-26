@@ -204,8 +204,9 @@ List<List<String>> getTransitionTable(AutomatonState node) {
 
     List<String> values = List.filled(headers.length, "ε", growable: true);
 
-    for (var index = 0; index < currentNode.transitions.length; ++index) {
-      var transition = currentNode.transitions[index];
+    for (var transition in currentNode.transitions) {
+      var index = headers.indexOf(transition.label ?? "ε");
+
       String value = transition.state.label ?? "ε";
       values[index] = value;
 
