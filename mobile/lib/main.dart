@@ -33,9 +33,23 @@ class _MyAppState extends State<MyApp> {
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    width: 5000,
+                      width: MediaQuery.of(context).size.width,
+                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
+                      child: const Text(
+                          "Regular Expression to FA with Thompson's Construction",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold
+                        ),
+                      )
+                  ),
+
+                  Container(
+                    width: MediaQuery.of(context).size.width,
                     padding: const EdgeInsets.all(10),
                     child: TextFormField(
                       initialValue: _regularExpression,
