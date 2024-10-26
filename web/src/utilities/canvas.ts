@@ -31,3 +31,55 @@ export function drawArrow(context: CanvasRenderingContext2D, fromX: number, from
     context.stroke();
     context.fill();
 }
+
+export function drawArrowCurved(
+    context: CanvasRenderingContext2D,
+    fromX: number,
+    fromY: number,
+    toX: number,
+    toY: number,
+    middleX: number,
+    middleY: number
+) {
+    let width = 4;
+    let headLength = 5;
+
+    // Draw the curved path
+    context.beginPath();
+    context.moveTo(fromX, fromY);
+    
+    // Quadratic curve to the middle point and then to the end point
+    context.quadraticCurveTo(middleX, middleY, toX, toY);
+    
+    context.lineWidth = width;
+    context.stroke();
+
+    // Calculate angle for the arrow head
+    let angle = Math.atan2(toY - fromY, toX - fromX);
+    
+    // Adjust the endpoint to be at the tip of the arrow
+    toX -= Math.cos(angle) * (width * 1.15);
+    toY -= Math.sin(angle) * (width * 1.15);
+
+    // Draw the arrow head
+    context.beginPath();
+    context.moveTo(toX, toY);
+    context.lineTo(toX - headLength * Math.cos(angle - Math.PI / 7),
+        toY - headLength * Math.sin(angle - Math.PI / 7)
+    );
+
+    context.lineTo(
+        toX - headLength * Math.cos(angle + Math.PI / 7),
+        toY - headLength * Math.sin(angle + Math.PI / 7)
+    );
+
+    context.lineTo(toX, toY);
+    context.lineTo(
+        toX - headLength * Math.cos(angle - Math.PI / 7),
+        toY - headLength * Math.sin(angle - Math.PI / 7)
+    );
+
+    context.lineWidth = width;
+    context.stroke();
+    context.fill();
+}

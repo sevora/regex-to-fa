@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { AutomatonState, getTransitionTable, thompsonConstruction } from './algorithms/thompson-construction';
-import { drawArrow } from './utilities/canvas';
+import { drawArrow, drawArrowCurved } from './utilities/canvas';
 
 interface ThompsonConstructionProps {
     postfixExpression: string;
@@ -46,7 +46,18 @@ function ThompsonConstruction({ postfixExpression }: ThompsonConstructionProps) 
 
             if (existIndex > -1) {
                 const [targetX, targetY] = renderedPositions[existIndex];
-                drawArrow(context, previousX + radius * 2, previousY, targetX, targetY);
+                if (targetX < previousX) {
+                    const topOriginX = previousX + radius;
+                    const topOriginY = previousY - radius;
+                    const topTargetX = targetX + radius;
+                    const topTargetY = targetY - radius;
+                    const midPointX = (topOriginX + topTargetX) / 2;
+                    const midPointY = (topOriginY + topTargetY) / 2;
+                    const topMidPointY = midPointY - Math.sqrt(midPointX);                    
+                    drawArrowCurved(context, topOriginX, topOriginY, topTargetX, topTargetY, midPointX, topMidPointY);
+                } else {
+                    drawArrow(context, previousX + radius * 2, previousY, targetX, targetY);
+                }
                 return;
             }
             
