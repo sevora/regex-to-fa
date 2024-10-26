@@ -73,8 +73,12 @@ class ThompsonConstructionPainter extends CustomPainter {
     labelPainter.paint(canvas, Offset(x + lineLength/2 - labelPainter.width, y - 20));
 
     // Draw the circular state
-    canvas.drawCircle(Offset(x + lineLength + radius, y), radius, paint..style = PaintingStyle.fill..color = Colors.white);
     canvas.drawCircle(Offset(x + lineLength + radius, y), radius, paint..style = PaintingStyle.stroke..color = Colors.black);
+
+    if (node.transitions.isEmpty) {
+      // Draw the circular state
+      canvas.drawCircle(Offset(x + lineLength + radius, y), radius * 0.8, paint..style = PaintingStyle.stroke..color = Colors.black);
+    }
 
     // Draw the text inside the circular state
     final TextPainter statePainter = TextPainter(
@@ -82,11 +86,11 @@ class ThompsonConstructionPainter extends CustomPainter {
         text: node.label,
         style: const TextStyle(fontSize: 16, color: Colors.black, fontFamily: 'monospace'),
       ),
-      textAlign: TextAlign.center,
+      textAlign: TextAlign.left,
       textDirection: TextDirection.ltr,
     )..layout();
 
-    statePainter.paint(canvas, Offset(x + lineLength + statePainter.width, y - statePainter.height / 2));
+    statePainter.paint(canvas, Offset(x + lineLength + radius - statePainter.width / 2, y - statePainter.height / 2));
 
     if (!renderedNodes.contains(node)) {
       renderedNodes.add(node);

@@ -200,7 +200,11 @@ List<List<String>> getTransitionTable(AutomatonState node) {
     }
 
     // we include the name of the node with these transitions
-    values.insert(0, currentNode.label ?? "ε");
+    values.insert(0,
+        (currentNode.label == "q0" ? "→" : "") +
+        (currentNode.transitions.isEmpty ? "*" : "") +
+        (currentNode.label ?? "ε")
+    );
     table.add(values);
     visited.add(currentNode);
   }

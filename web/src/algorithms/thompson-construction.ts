@@ -201,7 +201,11 @@ export function getTransitionTable(node: AutomatonState) {
         })
 
         // we include the name of the node with these transitions
-        values.unshift(node.label || "ε");
+        values.unshift(
+            (node.label === "q0" ? "→" : "") +
+            (node.transitions.length === 0 ? "*" : "") 
+            + node.label || "ε"
+        );
         table.push(values);
         visited.push(node);
     }

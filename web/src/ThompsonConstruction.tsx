@@ -73,6 +73,16 @@ function ThompsonConstruction({ postfixExpression }: ThompsonConstructionProps) 
             context.fill();
             context.stroke();
 
+            // when this is a final state, we want to draw circles
+            if (node.transitions.length === 0) {
+                context.lineWidth = 3;
+                context.beginPath();
+                context.arc(x + lineLength + radius, y, radius * 0.8, 0, 2 * Math.PI);
+                context.fillStyle = 'transparent';
+                context.fill();
+                context.stroke();
+            }
+
             // draw the text inside the circular state
             context.fillStyle = '#000';
             context.font = "32px monospace";
