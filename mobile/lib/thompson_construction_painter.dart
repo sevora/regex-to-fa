@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:regex_to_fa_mobile/utilities/painter.dart';
 import 'algorithms/thompson_construction.dart';
 
+/// This is a Thompson Construction Painter.
+/// It includes the transition diagram and transition table
+/// upon applying Thompson's construction.
 class ThompsonConstructionPainter extends CustomPainter {
   final String postfixExpression;
 
@@ -9,14 +12,6 @@ class ThompsonConstructionPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Paint diagramPaint = Paint()
-      ..color = Colors.black
-      ..style = PaintingStyle.stroke;
-
-    final Paint tablePaint = Paint()
-      ..color = Colors.black
-      ..style = PaintingStyle.stroke;
-
     const double radius = 30;
     const double lineLength = 60;
 
@@ -25,11 +20,28 @@ class ThompsonConstructionPainter extends CustomPainter {
     final List<Offset> renderedPositions = [];
 
     if (tree != null) {
+      // we need to initialize two separate Paint instances
+      // as there is weird behaviour when we don't.
+      final Paint diagramPaint = Paint()
+        ..color = Colors.black
+        ..style = PaintingStyle.stroke;
+
+      final Paint tablePaint = Paint()
+        ..color = Colors.black
+        ..style = PaintingStyle.stroke;
+
       renderNode(canvas, diagramPaint, "ε", tree, null, 0, radius, lineLength, renderedNodes, renderedPositions);
       renderTable(canvas, tablePaint, tree, 20, 150);
     }
   }
 
+  /// This is used to render the nodes individually and draw arrows connecting
+  /// them that is why this demands the previous node.
+  /// @param label the label of the transition
+  /// @param node the root or current node
+  /// @param previousNode the previous node
+  /// @param offsetY the offsetY used for layouting
+  /// @returns
   void renderNode(Canvas canvas, Paint paint, String? label, AutomatonState node, AutomatonState? previousNode, double offsetY, double radius, double lineLength,
       List<AutomatonState> renderedNodes, List<Offset> renderedPositions) {
 
@@ -87,6 +99,10 @@ class ThompsonConstructionPainter extends CustomPainter {
     }
   }
 
+  /// This renders the table for the given tree.
+  /// @param node the root node
+  /// @param startX the starting x-coordinate
+  /// @param startY the starting y-coordinate
   void renderTable(Canvas canvas, Paint paint, AutomatonState node, double startX, double startY) {
     // Assume getTransitionTable is defined and returns a List<List<String>>
     var table = getTransitionTable(node);

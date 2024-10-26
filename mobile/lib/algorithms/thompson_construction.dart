@@ -128,8 +128,10 @@ AutomatonState? thompsonConstruction(String postfixExpression) {
   return automata;
 }
 
+/// This sets the label names accordingly by traversing
+/// the tree by utilizing a stack.
+/// @param node the root node
 void setLabelNames(AutomatonState node) {
-  // calculate the state names by traversing the tree
   int stateIndex = 0;
   List<AutomatonState> visited = [];
   List<AutomatonState> nodes = [node]; // Assuming 'tree' is defined
@@ -149,6 +151,10 @@ void setLabelNames(AutomatonState node) {
   }
 }
 
+/// This gets the transition table of a tree by traversing
+/// it twice. Once to retrieve all the headers, and for the second time
+/// to get the associated values for each column in every row.
+/// @param node the root node
 List<List<String>> getTransitionTable(AutomatonState node) {
   List<String> headers = [];
   List<List<String>> table = [];

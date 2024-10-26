@@ -7,7 +7,7 @@ interface ThompsonConstructionProps {
 }
 
 /**
- * This is a Thompson Construction Visualizer.
+ * This is a Thompson Construction Component.
  * It includes the transition diagram and transition table
  * upon applying Thompson's construction.
  */
@@ -89,10 +89,10 @@ function ThompsonConstruction({ postfixExpression }: ThompsonConstructionProps) 
         }
 
         /**
-         * 
-         * @param node 
-         * @param startX 
-         * @param startY 
+         * This renders the table for the given tree.
+         * @param node the root node
+         * @param startX the starting x-coordinate
+         * @param startY the starting y-coordinate
          */
         function renderTable(node: AutomatonState, startX: number, startY: number) {
             const table = getTransitionTable(node);
