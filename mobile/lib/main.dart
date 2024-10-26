@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:regex_to_fa_mobile/thompson_construction_painter.dart';
 import './algorithms/shunting_yard.dart';
+import 'utilities/regex_validator.dart';
 
 void main() {
   runApp(const MyApp());
@@ -73,14 +74,19 @@ class _MyAppState extends State<MyApp> {
                       width: 5000,
                       height: 5000,
                       color: Colors.white,
-                      child: CustomPaint(
-                          size: Size.infinite,
-                          painter: ThompsonConstructionPainter(
-                          infixToPostfix(
-                            normalizeExpression(_regularExpression)
-                          )
-                        )
-                      ),
+                      child: validateRegEx(_regularExpression)
+                          ? CustomPaint(
+                              size: Size.infinite,
+                              painter: ThompsonConstructionPainter(
+                                  infixToPostfix(
+                                      normalizeExpression(_regularExpression))))
+                          : const Text(
+                              "Regular expression is NOT valid!",
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.bold),
+                            ),
                     ),
                   ),
                 ],
