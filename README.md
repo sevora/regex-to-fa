@@ -1,4 +1,4 @@
-# Regular Expression to Finite Automaton
+# Regular Expression to Finite Automaton &middot; ![GitHub](https://img.shields.io/github/license/sevora/regex-to-fa) ![GitHub repo size](https://img.shields.io/github/repo-size/sevora/regex-to-fa)
 This is an application both accessible on web and mobile. The purpose of this simple application is to render a given regular expression to a finite automaton diagram. This uses the Thompson Construction algorithm for the diagram generation along with the Shunting Yard algorithm to convert the infix input to postfix.
 
 ## Web
