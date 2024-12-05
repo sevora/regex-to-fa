@@ -10,5 +10,5 @@ Provided below is a screenshot taken of the working web-application.
 ## Mobile
 The mobile application is a Flutter application. It uses a CustomPainter which s extremely similar to the HTML5 Canvas API.
 
-## Improvements
+## Contributing
 This is open to improvements particularly in rendering union operations denoted by "+". The mobile application is also open to interface and interaction imporovements.
